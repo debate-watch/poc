@@ -6,3 +6,4 @@
    + https://account.jwplayer.com/#/account
    + http://support.jwplayer.com/customer/portal/articles/1413074-javascript-api-quick-start
    + http://support.jwplayer.com/customer/portal/articles/1413089-javascript-api-reference
+ + https://cdn4.iconfinder.com/data/icons/businessmen-set-1/512/30-512.png
