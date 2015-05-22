@@ -1,0 +1,40 @@
+<html>
+<head>
+  <title>Debate Watch</title>
+</head>
+<body>
+  <h1>Debate Watch</h1>
+
+  <h2>Iowa Republican Lincoln Dinner</h2>
+
+  <div id='player-container'>Loading the player ...</div>
+
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script src="http://code.jquery.com/jquery-2.1.4.min.js"></script>
+  <script type="text/javascript">
+
+    var jwplayer_source_url;
+
+    d3.json("api_keys.json", function(json){
+        jwplayer_source_url = "http://jwpsrv.com/library/" + json["jwplayer"] + ".js"
+
+        // dynamically load jwplayer source and initialize a player instance.
+
+        $.getScript(jwplayer_source_url, function( data, textStatus, jqxhr ) {
+            //console.log( data ); // Data returned
+            //console.log( textStatus ); // Success
+            //console.log( jqxhr.status ); // 200
+            //console.log( "Load was performed." );
+
+            jwplayer('player-container').setup({ 
+                file: '/videos/IowaRepublicanLincolnDinner_400771_1.mp4', 
+                height: 360, 
+                image: '/images/IowaRepublicanLincolnDinner_400771.png',
+                width: 640 
+            }); // jwplayer
+        }); // $.getScript
+    }); // d3.json
+
+  </script>
+</body>
+</html>
