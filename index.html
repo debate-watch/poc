@@ -21,6 +21,14 @@
   <script src="bower_components/jquery/dist/jquery.min.js"></script>
   <script type="text/javascript">
 
+      function play(){
+          jwplayer('player').play(true)
+      };
+
+      function pause(){
+          jwplayer('player').play(false)
+      };
+
       d3.json("api_keys.json", function(json){
 
           var jwplayer_source_url = "http://jwpsrv.com/library/" + json["jwplayer"] + ".js"
@@ -32,40 +40,27 @@
                   image: '/images/IowaRepublicanLincolnDinner_400771.png',
                   height: 360,
                   width: 640
-              })
+              }).onTime(function(){
+                  console.log("POSITION:", this.getPosition() ) // console.log("STATE:", this.getState()) // this will always log "PLAYING" under the .onTime() function. Time doesn't move when the player is paused.
+              });
 
-              jwplayer('player').onTime(function(){
-                  // console.log("STATE:", this.getState()) // this will always log "PLAYING" under the .onTime() function. Time doesn't move when the player is paused.
-                  console.log("POSITION:", this.getPosition();)
-              })
+              var timeline = d3.select("div#timeline").append("svg")
+                  .attr("height",36)
+                  .attr("width",640)
+                  .attr("style","border:1px solid #ccc; background:#eee;")
 
-              jwplayer('player').play(true)
+              var current_position_reference_line = timeline.append("svg:line")
+                  .attr("x1",0).attr("y1",0)
+                  .attr("x2",0).attr("y2",100)
+                  .attr("fill","none")
+                  .attr("stroke","steelblue")
+                  .attr("stroke-width","1.5px")
 
-              // create a timeline
-
-              //var timeline = d3.select("div#timeline-container")
-              //    .append("svg")
-              //        .attr("height",36)
-              //        .attr("width",640)
-              //        .attr("style","border:1px solid #ccc; background:#eee;")
-
-              //var current_position_line = timeline.append("line")
-
-
-
-
-
-
-              // update timeline.
-
-
-
-
+              play()
 
           });
 
       });
-
 
 
   </script>
