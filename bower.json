@@ -1,0 +1,6 @@
+{
+  "name": "debate-watch",
+  "dependencies": {
+    "octicons": "*"
+  }
+}

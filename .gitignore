@@ -1,3 +1,5 @@
 api_keys.json
 images/
 videos/
+.DS_Store
+bower_components/
