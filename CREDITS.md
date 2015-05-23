@@ -9,3 +9,4 @@
 
  + https://cdn4.iconfinder.com/data/icons/businessmen-set-1/512/30-512.png
  + https://octicons.github.com/usage/
+ + http://bower.io/docs/creating-packages/#bowerjson
