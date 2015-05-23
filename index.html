@@ -21,6 +21,25 @@
   <script src="bower_components/jquery/dist/jquery.min.js"></script>
   <script type="text/javascript">
 
+      var current_position = 0; // workaround to set initial value before player starts playing.
+
+      var player_width = 640;
+
+      var durationScale = d3.scale.linear()
+          .range([0, player_width]);
+
+      var timeline = d3.select("div#timeline").append("svg")
+          .attr("height",36)
+          .attr("width",player_width)
+          .attr("style","border:1px solid #ccc; background:#eee;")
+
+      var current_position_reference_line = timeline.append("svg:line")
+          .attr("x1",current_position).attr("y1",0)
+          .attr("x2",current_position).attr("y2",100)
+          .attr("fill","none")
+          .attr("stroke","steelblue")
+          .attr("stroke-width","1.5px")
+
       function play(){
           jwplayer('player').play(true)
       };
@@ -29,35 +48,42 @@
           jwplayer('player').play(false)
       };
 
+      function stop(){
+          jwplayer('player').stop()
+      };
+
       d3.json("api_keys.json", function(json){
 
           var jwplayer_source_url = "http://jwpsrv.com/library/" + json["jwplayer"] + ".js"
 
           $.getScript(jwplayer_source_url, function( data, textStatus, jqxhr ) {
 
-              var timeline = d3.select("div#timeline").append("svg")
-                  .attr("height",36)
-                  .attr("width",640)
-                  .attr("style","border:1px solid #ccc; background:#eee;")
-
-              var current_position_reference_line = timeline.append("svg:line")
-                  .attr("x1",0).attr("y1",0)
-                  .attr("x2",0).attr("y2",100)
-                  .attr("fill","none")
-                  .attr("stroke","steelblue")
-                  .attr("stroke-width","1.5px")
-
               jwplayer('player').setup({
                   file: '/videos/IowaRepublicanLincolnDinner_400771_3.mp4',
                   image: '/images/IowaRepublicanLincolnDinner_400771.png',
                   height: 360,
-                  width: 640
-              }).onTime(function(){
-                  var current_position = this.getPosition();
-                  console.log("POSITION:", current_position); // console.log("STATE:", this.getState()) // this will always log "PLAYING" under the .onTime() function. Time doesn't move when the player is paused.
+                  width: player_width
+              })
+
+              jwplayer('player').onTime(function(){
+
+                  // update durationScale based on video duration.
+
+                  var video_duration = this.getDuration(); // #todo: find a way to avoid setting this every iteration of onTime
+
+                  durationScale.domain([0, video_duration]); // #todo: find a way to avoid setting this every iteration of onTime
+
+                  // update current position and reference line based on scaled current position.
+
+                  current_position = this.getPosition();
+
                   current_position_reference_line.transition()
-                      .attr("x1",current_position)
-                      .attr("x2",current_position)
+                      .attr("x1", durationScale(current_position))
+                      .attr("x2", durationScale(current_position));
+
+                  var current_progress = parseFloat(current_position / video_duration);
+
+                  console.log("POSITION (s):", current_position, "-- COMPLETION (%):", current_progress); // console.log("STATE:", this.getState()) // this will always log "PLAYING" under the .onTime() function. Time doesn't move when the player is paused.
               });
 
               play()
@@ -65,6 +91,7 @@
           });
 
       });
+
 
   </script>
 </body>
