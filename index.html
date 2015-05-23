@@ -81,9 +81,10 @@
                       .attr("x1", durationScale(current_position))
                       .attr("x2", durationScale(current_position));
 
-                  var current_progress = parseFloat(current_position / video_duration);
+                  var current_progress = current_position / video_duration;
+                  var current_progress_percentage = (current_progress * 100).toFixed(5)
 
-                  console.log("POSITION (s):", current_position, "-- COMPLETION (%):", current_progress); // console.log("STATE:", this.getState()) // this will always log "PLAYING" under the .onTime() function. Time doesn't move when the player is paused.
+                  console.log("POSITION (s):", current_position, "-- COMPLETION (%):", current_progress_percentage); // console.log("STATE:", this.getState()) // this will always log "PLAYING" under the .onTime() function. Time doesn't move when the player is paused.
               });
 
               play()
