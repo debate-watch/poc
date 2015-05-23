@@ -35,15 +35,6 @@
 
           $.getScript(jwplayer_source_url, function( data, textStatus, jqxhr ) {
 
-              jwplayer('player').setup({
-                  file: '/videos/IowaRepublicanLincolnDinner_400771_3.mp4',
-                  image: '/images/IowaRepublicanLincolnDinner_400771.png',
-                  height: 360,
-                  width: 640
-              }).onTime(function(){
-                  console.log("POSITION:", this.getPosition() ) // console.log("STATE:", this.getState()) // this will always log "PLAYING" under the .onTime() function. Time doesn't move when the player is paused.
-              });
-
               var timeline = d3.select("div#timeline").append("svg")
                   .attr("height",36)
                   .attr("width",640)
@@ -56,12 +47,24 @@
                   .attr("stroke","steelblue")
                   .attr("stroke-width","1.5px")
 
+              jwplayer('player').setup({
+                  file: '/videos/IowaRepublicanLincolnDinner_400771_3.mp4',
+                  image: '/images/IowaRepublicanLincolnDinner_400771.png',
+                  height: 360,
+                  width: 640
+              }).onTime(function(){
+                  var current_position = this.getPosition();
+                  console.log("POSITION:", current_position); // console.log("STATE:", this.getState()) // this will always log "PLAYING" under the .onTime() function. Time doesn't move when the player is paused.
+                  current_position_reference_line.transition()
+                      .attr("x1",current_position)
+                      .attr("x2",current_position)
+              });
+
               play()
 
           });
 
       });
-
 
   </script>
 </body>
