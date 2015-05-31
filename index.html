@@ -2,23 +2,44 @@
 <head>
   <title>Debate Watch</title>
   <link rel="stylesheet" href="bower_components/octicons/octicons/octicons.css">
+  <link rel="stylesheet" href="bower_components/jquery.ui/themes/base/core.css">
+  <link rel="stylesheet" href="bower_components/jquery.ui/themes/base/slider.css">
+  <link rel="stylesheet" href="bower_components/jquery.ui/themes/base/theme.css">
 </head>
 <body>
-
   <div id="nav">
     <h1><span class="mega-octicon octicon-podium"></span>&nbsp;Debate Watch</h1>
   </div>
-
   <div id="page">
     <h2 id="event-title">Iowa Republican Lincoln Dinner</h2>
-
     <div id="player">Loading the player ...</div>
-
-    <div id="timeline" style="display:inline-block; margin-top:1em;"></div>
+    <div id="timeline" style="display:inline-block; margin-top:1em; margin-bottom:1em;"></div>
+    <div id="feedback">
+      <div class="btn-group" role="group" style="margin-bottom:1em;">
+        <button type="button" class="btn btn-default feedback-button" value="-1">-</button>
+        <button type="button" class="btn btn-default feedback-button" value="1">+</button>
+      </div>
+      <div class="btn-group" role="group" style="margin-bottom:1em;">
+        <button type="button" class="btn btn-default feedback-button" value="-5">-5</button>
+        <button type="button" class="btn btn-default feedback-button" value="-3">-3</button>
+        <button type="button" class="btn btn-default feedback-button" value="-1">-1</button>
+        <button type="button" class="btn btn-default feedback-button" value="1">+1</button>
+        <button type="button" class="btn btn-default feedback-button" value="3">+3</button>
+        <button type="button" class="btn btn-default feedback-button" value="5">+5</button>
+      </div>
+      <div id="slider" style="margin-bottom:1em; width:320px;"></div>
+    </div>
   </div>
-
+  <div id="footer">
+    <a href="https://github.com/debate-watch/poc">source</a>
+  </div>
   <script src="bower_components/d3/d3.min.js" charset="utf-8"></script>
+
   <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="bower_components/jquery.ui/ui/core.js"></script>
+  <script src="bower_components/jquery.ui/ui/widget.js"></script>
+  <script src="bower_components/jquery.ui/ui/mouse.js"></script>
+  <script src="bower_components/jquery.ui/ui/slider.js"></script>
   <script type="text/javascript">
 
       var current_position = 0; // workaround to set initial value before player starts playing.
@@ -93,6 +114,38 @@
 
       });
 
+      // FEEDBACK > BUTTONS
+
+      var feedback_buttons = document.getElementsByClassName("feedback-button")
+
+      for (var i=0; i < feedback_buttons.length; i++){
+        feedback_buttons[i].addEventListener("click", clickFeedback, false);
+      }
+
+      function clickFeedback(){
+          var feedback_value = parseInt(this.value);
+          console.log(feedback_value);
+      };
+
+      // FEEDBACK > SLIDER
+
+      var default_feedback_value = 0;
+
+      $("#slider").slider({
+          orientation:"horizontal",
+          min:-5,
+          max:5,
+          step:1,
+          value: default_feedback_value
+      });
+
+      $("#slider").on("slidechange", function(event,ui){
+          if (event.originalEvent) { // avoids infinite loop... (value changes re-trigger slidechange event)
+              var feedback_value = $("#slider").slider("value");
+              console.log(feedback_value);
+              $("#slider").slider("option","value", default_feedback_value);
+          };
+      });
 
   </script>
 </body>

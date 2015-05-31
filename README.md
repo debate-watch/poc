@@ -19,11 +19,22 @@ youtube-dl http://www.c-span.org/video/?326033-1/iowa-gop-lincoln-dinner
 
 > ensure compliance with video provider terms and conditions
 
-### using octocons icons
+### installing bower
 
 ```` sh
 npm install bower
+````
+
+### installing packages from bower config (if already populated)
+
+```` sh
 bower install
+````
+
+### populate bower config upon package installation
+
+```` sh
+bower install <package> --save
 ````
 
 ### starting web server
