@@ -28,7 +28,8 @@
         <button type="button" class="btn btn-default feedback-button" value="3">+3</button>
         <button type="button" class="btn btn-default feedback-button" value="5">+5</button>
       </div>
-      <div id="slider" style="margin-top:1em; margin-bottom:2em; width:320px;"></div>
+      <div id="slider-h" class="slider" style="margin-top:1em; margin-bottom:2em; width:320px;"></div>
+      <div id="slider-v" class="slider" style="margin-top:1em; margin-bottom:2em; height:320px;"></div>
     </div>
   </div>
   <div id="footer">
@@ -133,7 +134,15 @@
 
       var default_feedback_value = 0;
 
-      $("#slider").slider({
+      $("#slider-v").slider({
+          orientation:"vertical",
+          min:-5,
+          max:5,
+          step:1,
+          value: default_feedback_value
+      });
+
+      $("#slider-h").slider({
           orientation:"horizontal",
           min:-5,
           max:5,
@@ -151,13 +160,13 @@
           } // formatLabel
       };
 
-      $("#slider").slider().slider('pips', pips_options).slider('float', pips_options);
+      $(".slider").slider().slider('pips', pips_options).slider('float', pips_options);
 
-      $("#slider").on("slidechange", function(event,ui){
+      $(".slider").on("slidechange", function(event,ui){
           if (event.originalEvent) { // avoids infinite loop... (value changes re-trigger slidechange event)
-              var feedback_value = $("#slider").slider("value");
+              var feedback_value = $(this).slider("value"); // if only one slider: $(".slider").slider("value");
               console.log(feedback_value);
-              $("#slider").slider("option","value", default_feedback_value);
+              $(".slider").slider("option","value", default_feedback_value);
           };
       });
 
