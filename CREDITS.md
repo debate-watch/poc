@@ -16,7 +16,8 @@
    + [quick-start](http://support.jwplayer.com/customer/portal/articles/1413074-javascript-api-quick-start)
    + [api docs](http://support.jwplayer.com/customer/portal/articles/1413089-javascript-api-reference)
    + [logo removal. hmm...](http://support.jwplayer.com/customer/portal/articles/1406865-branding-your-player)
-   + [notes on ](https://gist.github.com/s2t2/45460c06581798ba6e94#file-jwplayer_notes-js)
+   + [notes and comments](https://gist.github.com/s2t2/45460c06581798ba6e94#file-jwplayer_notes-js)
+   + [gitter chat](https://gitter.im/jwplayer/jwplayer)
 
 ## Site Branding and Management
 

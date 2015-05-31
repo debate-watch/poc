@@ -35,24 +35,10 @@
   <div id="page">
     <h2 id="event-title">Iowa Republican Lincoln Dinner</h2>
     <div id="player">Loading the player ...</div>
-    <div id="timeline" style="display:inline-block; margin-top:1em; margin-bottom:1em;"></div>
     <div id="feedback">
-      <div class="btn-group" role="group" style="margin-bottom:1em;">
-        <button type="button" class="btn btn-default feedback-button" value="-1">-</button>
-        <button type="button" class="btn btn-default feedback-button" value="1">+</button>
-      </div>
-      <div class="btn-group" role="group" style="margin-bottom:1em;">
-        <button type="button" class="btn btn-default feedback-button" value="-5">-5</button>
-        <button type="button" class="btn btn-default feedback-button" value="-3">-3</button>
-        <button type="button" class="btn btn-default feedback-button" value="-1">-1</button>
-        <button type="button" class="btn btn-default feedback-button" value="1">+1</button>
-        <button type="button" class="btn btn-default feedback-button" value="3">+3</button>
-        <button type="button" class="btn btn-default feedback-button" value="5">+5</button>
-      </div>
-      <div id="slider-h" class="slider" style="margin-top:1em; margin-bottom:2em; width:320px;"></div>
-      <div id="slider-v" class="slider" style="margin-top:2em; margin-bottom:2em; height:320px;"></div>
-      <div id="slider-c" style="margin-top:2em; margin-bottom:2em; height:160px;"></div>
+      <div class="slider" style="margin-top:2em; margin-bottom:2em; height:320px;"></div>
     </div>
+    <div id="timeline" style="display:inline-block; margin-top:1em; margin-bottom:1em;"></div>
   </div>
   <div id="footer">
     <a href="https://github.com/debate-watch/poc">source</a>
@@ -65,46 +51,43 @@
   <script src="bower_components/jquery.ui/ui/mouse.js"></script>
   <script src="bower_components/jquery.ui/ui/slider.js"></script>
   <script src="bower_components/jquery-ui-slider-pips/dist/jquery-ui-slider-pips.min.js"></script>
-  <script src="bower_components/circular-slider/dist/circular-slider.min.js"></script>
   <script type="text/javascript">
 
-      var current_position = 0; // workaround to set initial value before player starts playing.
-
+      var player_file = '/videos/IowaRepublicanLincolnDinner_400771_3.mp4';
+      var player_image = '/images/IowaRepublicanLincolnDinner_400771.png';
       var player_width = 640;
-
-      var durationScale = d3.scale.linear()
-          .range([0, player_width]);
+      var player_height = 360;
+      var player_position = 0;
 
       var timeline = d3.select("div#timeline").append("svg")
           .attr("height",36)
           .attr("width",player_width)
           .attr("style","border:1px solid #ccc; background:#eee;")
 
-      var current_position_reference_line = timeline.append("svg:line")
-          .attr("x1",current_position).attr("y1",0)
-          .attr("x2",current_position).attr("y2",100)
+      var player_position_reference_line = timeline.append("svg:line")
+          .attr("x1", player_position)
+          .attr("y1", 0)
+          .attr("x2", player_position)
+          .attr("y2", 100)
           .attr("fill","none")
           .attr("stroke","steelblue")
-          .attr("stroke-width","1.5px")
+          .attr("stroke-width","2px")
 
-      // PLAYER
+      var durationScale = d3.scale.linear()
+          .range([0, player_width]);
 
       d3.json("api_keys.json", function(json){
-
           var jwplayer_source_url = "http://jwpsrv.com/library/" + json["jwplayer"] + ".js"
-
           $.getScript(jwplayer_source_url, function( data, textStatus, jqxhr ) {
 
               jwplayer('player').setup({
-                  file: '/videos/IowaRepublicanLincolnDinner_400771_3.mp4',
-                  image: '/images/IowaRepublicanLincolnDinner_400771.png',
-                  height: 360,
+                  file: player_file,
+                  image: player_image,
+                  height: player_height,
                   width: player_width
               })
 
               jwplayer('player').onTime(function(){
-
-                  // update durationScale based on video duration.
 
                   var video_duration = this.getDuration(); // #todo: find a way to avoid setting this every iteration of onTime
 
@@ -112,16 +95,16 @@
 
                   // update current position and reference line based on scaled current position.
 
-                  current_position = this.getPosition();
+                  player_position = this.getPosition();
 
-                  current_position_reference_line.transition()
-                      .attr("x1", durationScale(current_position))
-                      .attr("x2", durationScale(current_position));
+                  player_position_reference_line.transition()
+                      .attr("x1", durationScale(player_position))
+                      .attr("x2", durationScale(player_position));
 
-                  var current_progress = current_position / video_duration;
-                  var current_progress_percentage = (current_progress * 100).toFixed(5)
+                  var current_progress = player_position / video_duration;
+                  var current_progress_percentage = (current_progress * 100).toFixed(5);
 
-                  console.log("POSITION (s):", current_position, "-- COMPLETION (%):", current_progress_percentage); // console.log("STATE:", this.getState()) // this will always log "PLAYING" under the .onTime() function. Time doesn't move when the player is paused.
+                  console.log("POSITION (s):", player_position, "-- COMPLETION (%):", current_progress_percentage);
               });
 
               play()
@@ -130,96 +113,52 @@
 
       });
 
-      function play(){
-          jwplayer('player').play(true)
-      };
+      function play(){ jwplayer('player').play(true) };
 
-      function pause(){
-          jwplayer('player').play(false)
-      };
+      function pause(){ jwplayer('player').play(false) };
 
-      function stop(){
-          jwplayer('player').stop()
-      };
+      function stop(){ jwplayer('player').stop() };
 
       // FEEDBACK
 
-      var feedback_values = {"min": -50, "max": 50, "neutral": 0, "tick_interval": 10 };
+      var ratings = {"min": -50, "max": 50, "neutral": 0};
 
-      // FEEDBACK > BUTTONS
+      var tick_interval = 1 // Math.abs(ratings.max - ratings.min) / 20;
 
-      var feedback_buttons = document.getElementsByClassName("feedback-button")
+      var feedback_slider = $(".slider")
 
-      for (var i=0; i < feedback_buttons.length; i++){
-        feedback_buttons[i].addEventListener("click", clickFeedback, false);
-      }
-
-      function clickFeedback(){
-          var feedback_value = parseInt(this.value);
-          console.log(feedback_value);
-      };
-
-      // FEEDBACK > SLIDER
-
-      $("#slider-v").slider({
+      feedback_slider.slider({
           orientation:"vertical",
-          min: feedback_values.min,
-          max: feedback_values.max,
-          step: feedback_values.tick_interval,
-          value: feedback_values.neutral
+          min: ratings.min,
+          max: ratings.max,
+          step: tick_interval,
+          value: ratings.neutral
       });
 
-      $("#slider-h").slider({
-          orientation:"horizontal",
-          min: feedback_values.min,
-          max: feedback_values.max,
-          step: feedback_values.tick_interval,
-          value: feedback_values.neutral
+      feedback_slider.on("slidechange", function(event,ui){
+          if (event.originalEvent) {
+
+              var feedback_value = parseInt($(this).slider("value"));
+              console.log(feedback_value);
+
+              feedback_slider.slider("option","value", ratings.neutral);
+          }
       });
 
       var slider_display_options = {
           //rest:"label",
           formatLabel: function(val){
-              if(val > 0){ return this.prefix + "+" + val + this.suffix } else { return this.prefix + val + this.suffix }
+              if(val > 0){
+                  return this.prefix + "+" + val + this.suffix
+              } else {
+                  return this.prefix + val + this.suffix
+              }
           }
       };
 
-      $(".slider").slider()
+      feedback_slider.slider()
           .slider('pips', slider_display_options)
-          .slider('float', slider_display_options);
-
-      $(".slider").on("slidechange", function(event,ui){
-
-          if (event.originalEvent) { // avoids infinite loop...
-
-              var feedback_value = $(this).slider("value");
-              console.log(feedback_value);
-
-              $(".slider").slider("option","value", feedback_values.neutral);
-          };
-      });
-
-      // FEEDBACK > CIRCULAR SLIDER (DIAL)
-
-      var dial = $('#slider-c').CircularSlider({
-          min: feedback_values.min,
-          max: feedback_values.max,
-          value: feedback_values.neutral,
-          shape: "Half Circle",
-          radius: 75,
-          innerCircleRatio: '0.70',
-          //handleDist: 100,
-          animate: true,
-          animateDuration : 300,
-          selectable: false,
-          //formLabel: function(value, prefix, suffix){},
-          onSlideEnd: function(ui, val) {
-              var feedback_value = val;
-              console.log(feedback_value);
-
-              dial.setValue(feedback_values.neutral);
-          }
-      });
+          .slider('float', slider_display_options)
 
   </script>
 </body>
