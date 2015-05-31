@@ -65,6 +65,8 @@
 
       // PLAYER
 
+      var player;
+
       var player_options = {
           file_name: '/videos/IowaRepublicanLincolnDinner_400771_3.mp4',
           image_name: '/images/IowaRepublicanLincolnDinner_400771.png',
@@ -96,7 +98,7 @@
           var jwplayer_source_url = "http://jwpsrv.com/library/" + json["jwplayer"] + ".js"
           $.getScript(jwplayer_source_url, function( data, textStatus, jqxhr ) {
 
-              var player = jwplayer('player')
+              player = jwplayer('player')
                   .setup({
                       file: player_options.file_name,
                       image: player_options.image_name,
@@ -142,6 +144,9 @@
 
       // RATINGS
 
+      var ratings = [];
+      //var ratings = [[1.9,22],[4.1,25],[5.9,41],[6.9,23],[7.2,23],[7.4,23],[7.7,23],[7.9,23],[8.4,23],[8.4,23],[9.2,33],[9.4,33],[10.2,34],[10.7,42],[10.7,42],[11.7,-22],[11.9,-22],[12.4,-29],[12.7,-29],[12.9,-29],[13.2,-29],[13.7,-37],[13.9,-37],[15.5,22],[15.9,7],[16.9,-9]]
+
       var rating_options = {"min": -50, "max": 50, "step":1, "neutral": 0};
 
       var ratings_slider = $("#slider")
@@ -160,8 +165,11 @@
           });
 
       function logRating(){
-          var rating = ratings_slider.slider("value")
-          console.log(rating);
+          var position = player.getPosition();
+          var rating = ratings_slider.slider("value");
+          ratings.push([position,rating])
+          console.log(position, rating);
+          console.log(ratings)
       };
 
       function resetRating(){
