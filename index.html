@@ -7,6 +7,26 @@
   <link rel="stylesheet" href="bower_components/jquery.ui/themes/base/theme.css">
   <link rel="stylesheet" href="bower_components/jquery-ui-slider-pips/dist/jquery-ui-slider-pips.css">
   <link rel="stylesheet" href="bower_components/circular-slider/dist/circular-slider.min.css">
+  <style type="text/css">
+      //#vertical-slider {
+      //    height: 150px;
+      //    margin-left: 30px;
+      //}
+
+      //.ui-slider-pip-selected {
+      //    color:steelblue;
+      //}
+
+      //.ui-state-focus {
+      //    left:100;
+      //    color:steelblue;
+      //}
+
+      //.ui-state-active {
+      //    left:100;
+      //    color:steelblue;
+      //}
+  </style>
 </head>
 <body>
   <div id="nav">
@@ -67,17 +87,7 @@
           .attr("stroke","steelblue")
           .attr("stroke-width","1.5px")
 
-      function play(){
-          jwplayer('player').play(true)
-      };
-
-      function pause(){
-          jwplayer('player').play(false)
-      };
-
-      function stop(){
-          jwplayer('player').stop()
-      };
+      // PLAYER
 
       d3.json("api_keys.json", function(json){
 
@@ -120,6 +130,22 @@
 
       });
 
+      function play(){
+          jwplayer('player').play(true)
+      };
+
+      function pause(){
+          jwplayer('player').play(false)
+      };
+
+      function stop(){
+          jwplayer('player').stop()
+      };
+
+      // FEEDBACK
+
+      var feedback_values = {"min": -50, "max": 50, "neutral": 0, "tick_interval": 10 };
+
       // FEEDBACK > BUTTONS
 
       var feedback_buttons = document.getElementsByClassName("feedback-button")
@@ -135,53 +161,50 @@
 
       // FEEDBACK > SLIDER
 
-      var default_feedback_value = 0;
-
       $("#slider-v").slider({
           orientation:"vertical",
-          min:-5,
-          max:5,
-          step:1,
-          value: default_feedback_value
+          min: feedback_values.min,
+          max: feedback_values.max,
+          step: feedback_values.tick_interval,
+          value: feedback_values.neutral
       });
 
       $("#slider-h").slider({
           orientation:"horizontal",
-          min:-5,
-          max:5,
-          step:1,
-          value: default_feedback_value
+          min: feedback_values.min,
+          max: feedback_values.max,
+          step: feedback_values.tick_interval,
+          value: feedback_values.neutral
       });
 
-      var pips_options = {
+      var slider_display_options = {
+          //rest:"label",
           formatLabel: function(val){
-              if(val > 0){
-                  return this.prefix + "+" + val + this.suffix
-              } else {
-                  return this.prefix + val + this.suffix
-              }
-          } // formatLabel
+              if(val > 0){ return this.prefix + "+" + val + this.suffix } else { return this.prefix + val + this.suffix }
+          }
       };
 
-      $(".slider").slider().slider('pips', pips_options).slider('float', pips_options);
+      $(".slider").slider()
+          .slider('pips', slider_display_options)
+          .slider('float', slider_display_options);
 
       $(".slider").on("slidechange", function(event,ui){
-          if (event.originalEvent) { // avoids infinite loop... (value changes re-trigger slidechange event)
-              var feedback_value = $(this).slider("value"); // if only one slider: $(".slider").slider("value");
+
+          if (event.originalEvent) { // avoids infinite loop...
+
+              var feedback_value = $(this).slider("value");
               console.log(feedback_value);
-              $(".slider").slider("option","value", default_feedback_value);
+
+              $(".slider").slider("option","value", feedback_values.neutral);
           };
       });
 
       // FEEDBACK > CIRCULAR SLIDER (DIAL)
-      // ... value does not start on the initialized `value`.
-      // ... sometimes throws "Uncaught Invalid range X" where X is outside the min-to-max range.
-      // ... requires debugging.
 
       var dial = $('#slider-c').CircularSlider({
-          min: -5,
-          max: 5,
-          value: default_feedback_value,
+          min: feedback_values.min,
+          max: feedback_values.max,
+          value: feedback_values.neutral,
           shape: "Half Circle",
           radius: 75,
           innerCircleRatio: '0.70',
@@ -190,9 +213,11 @@
           animateDuration : 300,
           selectable: false,
           //formLabel: function(value, prefix, suffix){},
-          onSlideEnd: function(ui, feedback_value) {
+          onSlideEnd: function(ui, val) {
+              var feedback_value = val;
               console.log(feedback_value);
-              dial.setValue(default_feedback_value);
+
+              dial.setValue(feedback_values.neutral);
           }
       });
 
