@@ -53,16 +53,22 @@
   <script src="bower_components/jquery-ui-slider-pips/dist/jquery-ui-slider-pips.min.js"></script>
   <script type="text/javascript">
 
-      var player_file = '/videos/IowaRepublicanLincolnDinner_400771_3.mp4';
-      var player_image = '/images/IowaRepublicanLincolnDinner_400771.png';
-      var player_width = 640;
-      var player_height = 360;
-      var player_position = 0;
+      // PLAYER
+
+      var player_options = {
+          file_name: '/videos/IowaRepublicanLincolnDinner_400771_3.mp4',
+          image_name: '/images/IowaRepublicanLincolnDinner_400771.png',
+          height: 360,
+          width: 640,
+          starting_position: 0
+      };
+
+      var player_position = player_options.starting_position;
 
       var timeline = d3.select("div#timeline").append("svg")
-          .attr("height",36)
-          .attr("width",player_width)
-          .attr("style","border:1px solid #ccc; background:#eee;")
+          .attr("height", 36)
+          .attr("width", player_options.width)
+          .attr("style", "border:1px solid #ccc; background:#eee;")
 
       var player_position_reference_line = timeline.append("svg:line")
           .attr("x1", player_position)
@@ -73,39 +79,37 @@
           .attr("stroke","steelblue")
           .attr("stroke-width","2px")
 
-      var durationScale = d3.scale.linear()
-          .range([0, player_width]);
+      var positionToWidth = d3.scale.linear()
+          .range([0, player_options.width]);
 
       d3.json("api_keys.json", function(json){
           var jwplayer_source_url = "http://jwpsrv.com/library/" + json["jwplayer"] + ".js"
           $.getScript(jwplayer_source_url, function( data, textStatus, jqxhr ) {
 
-              jwplayer('player').setup({
-                  file: player_file,
-                  image: player_image,
-                  height: player_height,
-                  width: player_width
-              })
+              var player = jwplayer('player')
+                  .setup({
+                      file: player_options.file_name,
+                      image: player_options.image_name,
+                      height: player_options.height,
+                      width: player_options.width
+                  })
+                  .onTime(function(){
 
-              jwplayer('player').onTime(function(){
+                      player_position = this.getPosition();
 
-                  var video_duration = this.getDuration(); // #todo: find a way to avoid setting this every iteration of onTime
+                      var video_duration = this.getDuration(); // #todo: find a way to avoid setting this every iteration of onTime
 
-                  durationScale.domain([0, video_duration]); // #todo: find a way to avoid setting this every iteration of onTime
+                      positionToWidth.domain([0, video_duration]); // #todo: find a way to avoid setting this every iteration of onTime
 
-                  // update current position and reference line based on scaled current position.
+                      player_position_reference_line.transition()
+                          .attr("x1", positionToWidth(player_position))
+                          .attr("x2", positionToWidth(player_position));
 
-                  player_position = this.getPosition();
+                      var current_progress = player_position / video_duration;
+                      var current_progress_percentage = (current_progress * 100).toFixed(5);
+                      console.log("POSITION (s):", player_position, "-- COMPLETION (%):", current_progress_percentage);
 
-                  player_position_reference_line.transition()
-                      .attr("x1", durationScale(player_position))
-                      .attr("x2", durationScale(player_position));
-
-                  var current_progress = player_position / video_duration;
-                  var current_progress_percentage = (current_progress * 100).toFixed(5);
-
-                  console.log("POSITION (s):", player_position, "-- COMPLETION (%):", current_progress_percentage);
-              });
+                  })
 
               play()
 
@@ -113,52 +117,45 @@
 
       });
 
-      function play(){ jwplayer('player').play(true) };
-
-      function pause(){ jwplayer('player').play(false) };
-
-      function stop(){ jwplayer('player').stop() };
-
-      // FEEDBACK
-
-      var ratings = {"min": -50, "max": 50, "neutral": 0};
-
-      var tick_interval = 1 // Math.abs(ratings.max - ratings.min) / 20;
-
-      var feedback_slider = $(".slider")
-
-      feedback_slider.slider({
-          orientation:"vertical",
-          min: ratings.min,
-          max: ratings.max,
-          step: tick_interval,
-          value: ratings.neutral
-      });
-
-      feedback_slider.on("slidechange", function(event,ui){
-          if (event.originalEvent) {
-
-              var feedback_value = parseInt($(this).slider("value"));
-              console.log(feedback_value);
-
-              feedback_slider.slider("option","value", ratings.neutral);
-          }
-      });
-
-      var slider_display_options = {
-          //rest:"label",
-          formatLabel: function(val){
-              if(val > 0){
-                  return this.prefix + "+" + val + this.suffix
-              } else {
-                  return this.prefix + val + this.suffix
-              }
-          }
+      function play(){
+          jwplayer('player').play(true)
       };
 
-      feedback_slider.slider()
-          .slider('pips', slider_display_options)
-          .slider('float', slider_display_options)
+      function pause(){
+          jwplayer('player').play(false)
+      };
+
+      function stop(){
+          jwplayer('player').stop()
+      };
+
+      // RATINGS
+
+      var rating_options = {"min": -50, "max": 50, "step":1, "neutral": 0};
+
+      var ratings_slider = $(".slider")
+          .slider({
+              orientation:"vertical",
+              min: rating_options.min,
+              max: rating_options.max,
+              step: rating_options.step,
+              value: rating_options.neutral
+          })
+          .on("slidechange", function(e,ui){
+              if (e.originalEvent) {
+                  logRating();
+                  resetRating();
+              }
+          });
+
+      function logRating(){
+          var rating = ratings_slider.slider("value")
+          console.log(rating);
+      };
+
+      function resetRating(){
+          ratings_slider.slider("option","value", rating_options.neutral);
+      };
 
   </script>
 </body>
