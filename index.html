@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="bower_components/jquery.ui/themes/base/core.css">
   <link rel="stylesheet" href="bower_components/jquery.ui/themes/base/slider.css">
   <link rel="stylesheet" href="bower_components/jquery.ui/themes/base/theme.css">
+  <link rel="stylesheet" href="bower_components/jquery-ui-slider-pips/dist/jquery-ui-slider-pips.css">
 </head>
 <body>
   <div id="nav">
@@ -27,7 +28,7 @@
         <button type="button" class="btn btn-default feedback-button" value="3">+3</button>
         <button type="button" class="btn btn-default feedback-button" value="5">+5</button>
       </div>
-      <div id="slider" style="margin-bottom:1em; width:320px;"></div>
+      <div id="slider" style="margin-top:1em; margin-bottom:2em; width:320px;"></div>
     </div>
   </div>
   <div id="footer">
@@ -40,6 +41,7 @@
   <script src="bower_components/jquery.ui/ui/widget.js"></script>
   <script src="bower_components/jquery.ui/ui/mouse.js"></script>
   <script src="bower_components/jquery.ui/ui/slider.js"></script>
+  <script src="bower_components/jquery-ui-slider-pips/dist/jquery-ui-slider-pips.min.js"></script>
   <script type="text/javascript">
 
       var current_position = 0; // workaround to set initial value before player starts playing.
@@ -138,6 +140,18 @@
           step:1,
           value: default_feedback_value
       });
+
+      var pips_options = {
+          formatLabel: function(val){
+              if(val > 0){
+                  return this.prefix + "+" + val + this.suffix
+              } else {
+                  return this.prefix + val + this.suffix
+              }
+          } // formatLabel
+      };
+
+      $("#slider").slider().slider('pips', pips_options).slider('float', pips_options);
 
       $("#slider").on("slidechange", function(event,ui){
           if (event.originalEvent) { // avoids infinite loop... (value changes re-trigger slidechange event)
