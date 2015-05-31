@@ -6,6 +6,7 @@
   <link rel="stylesheet" href="bower_components/jquery.ui/themes/base/slider.css">
   <link rel="stylesheet" href="bower_components/jquery.ui/themes/base/theme.css">
   <link rel="stylesheet" href="bower_components/jquery-ui-slider-pips/dist/jquery-ui-slider-pips.css">
+  <link rel="stylesheet" href="bower_components/circular-slider/dist/circular-slider.min.css">
 </head>
 <body>
   <div id="nav">
@@ -29,7 +30,8 @@
         <button type="button" class="btn btn-default feedback-button" value="5">+5</button>
       </div>
       <div id="slider-h" class="slider" style="margin-top:1em; margin-bottom:2em; width:320px;"></div>
-      <div id="slider-v" class="slider" style="margin-top:1em; margin-bottom:2em; height:320px;"></div>
+      <div id="slider-v" class="slider" style="margin-top:2em; margin-bottom:2em; height:320px;"></div>
+      <div id="slider-c" style="margin-top:2em; margin-bottom:2em; height:160px;"></div>
     </div>
   </div>
   <div id="footer">
@@ -43,6 +45,7 @@
   <script src="bower_components/jquery.ui/ui/mouse.js"></script>
   <script src="bower_components/jquery.ui/ui/slider.js"></script>
   <script src="bower_components/jquery-ui-slider-pips/dist/jquery-ui-slider-pips.min.js"></script>
+  <script src="bower_components/circular-slider/dist/circular-slider.min.js"></script>
   <script type="text/javascript">
 
       var current_position = 0; // workaround to set initial value before player starts playing.
@@ -168,6 +171,29 @@
               console.log(feedback_value);
               $(".slider").slider("option","value", default_feedback_value);
           };
+      });
+
+      // FEEDBACK > CIRCULAR SLIDER (DIAL)
+      // ... value does not start on the initialized `value`.
+      // ... sometimes throws "Uncaught Invalid range X" where X is outside the min-to-max range.
+      // ... requires debugging.
+
+      var dial = $('#slider-c').CircularSlider({
+          min: -5,
+          max: 5,
+          value: default_feedback_value,
+          shape: "Half Circle",
+          radius: 75,
+          innerCircleRatio: '0.70',
+          //handleDist: 100,
+          animate: true,
+          animateDuration : 300,
+          selectable: false,
+          //formLabel: function(value, prefix, suffix){},
+          onSlideEnd: function(ui, feedback_value) {
+              console.log(feedback_value);
+              dial.setValue(default_feedback_value);
+          }
       });
 
   </script>
