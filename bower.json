@@ -1,11 +1,10 @@
 {
   "name": "debate-watch",
   "dependencies": {
-    //"circular-slider": "~1.0.8",
+    "bootstrap": "~3.3.4",
     "d3": "~3.5.5",
     "jquery": "~2.1.4",
     "jquery.ui": "~1.11.4",
-    "jquery-ui-slider-pips": "~1.10.0",
     "octicons": "*"
   }
 }
