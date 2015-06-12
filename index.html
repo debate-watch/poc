@@ -20,11 +20,12 @@
       body { padding-top: 60px; }
       nav {height: 60px; }
       /* .navigation .octicon { width: 64px;} */
-      div#page {width: 940px;}
-      div#player {display:inline-block}
-      div#slider {display:inline-block; height: 360px; margin-left:1em;}
-      div#timeline {margin-top:1em; margin-bottom:1em;}
-      footer{margin-top: 1em; margin-bottom: 2em;}
+      div#page {width: 940px; }
+      div#player {display:inline-block; }
+      div#slider {display:inline-block; height: 360px; margin-left:1em; }
+      div#timeline {margin-top:1em; margin-bottom:1em; }
+      footer {margin-top: 1em; margin-bottom: 2em; }
+      .line {fill: none; stroke: steelblue; stroke-width: 1.5px; }
   </style>
 </head>
 <body>
@@ -96,6 +97,10 @@
 
       var rating_options = {"min": -50, "max": 50, "step":1, "neutral": 0};
 
+      var ratingToHeight = d3.scale.linear()
+          .domain([rating_options.min, rating_options.max])
+          .range([player_options.height, 0]) // inversed on purpose
+
       var ratings_slider = $("#slider")
           .slider({
               orientation:"vertical",
@@ -115,9 +120,21 @@
               }
           });
 
-      //var ratings = [];
-      //var ratings = [[1.9,22],[4.1,25],[5.9,41],[6.9,23],[7.2,23],[7.4,23],[7.7,23],[7.9,23],[8.4,23],[8.4,23],[9.2,33],[9.4,33],[10.2,34],[10.7,42],[10.7,42],[11.7,-22],[11.9,-22],[12.4,-29],[12.7,-29],[12.9,-29],[13.2,-29],[13.7,-37],[13.9,-37],[15.5,22],[15.9,7],[16.9,-9]]
+      var ratingsLineGenerator = d3.svg.line()
+          .x(function(d) { return positionToWidth(d[0]) })
+          .y(function(d) { return d[1] }) // .y(function(d) { return ratingToHeight(d[1]) })
 
+      //var ratings = [];
+      //var ratings = [
+      //    [1.9,22],[4.1,25],[5.9,41],[6.9,23],[7.2,23],[7.4,23],[7.7,23],[7.9,23],[8.4,23],
+      //    [8.4,23],[9.2,33],[9.4,33],[10.2,34],[10.7,42],[10.7,42],[11.7,-22],[11.9,-22],[12.4,-29],
+      //    [12.7,-29],[12.9,-29],[13.2,-29],[13.7,-37],[13.9,-37],[15.5,22],[15.9,7],[16.9,-9],[100,0],
+      //    [160.9,-9],[460.9,-10],[1500,-5]
+      //]
+
+      var ratings = [
+          [0,0],[100,0],[200,0],[300,0],[400,0],[500,10],[600,-10],[700,50],[800,-50]
+      ]
       //function logRating(){ // slider.getRating
       //    var position = player.getPosition();
       //    var rating = ratings_slider.slider("value");
@@ -181,7 +198,7 @@
                           return [nst.key, selected_rating_value]
                       })
 
-                      console.log(scrubbed_prs)
+                      //console.log(scrubbed_prs)
                       // 102 pairs >> [["0",0],["1",0],["2",0],["3",0],["4",0],["7",0],["0.3",0],["0.5",0],["0.8",0],["1.3",0],["1.5",0],["1.8",0],["2.3",0],["2.5",0],["2.8",0],["3.3",0],["3.5",0],["3.8",0],["4.3",0],["4.5",0],["4.8",0],["5.1",0],["5.3",0],["5.5",20],["6.1",20],["6.6",20],["6.8",0],["7.3",20],["7.6",0],["7.8",20],["8.1",0],["8.3",0],["8.6",0],["8.8",0],["9.1",0],["9.3",0],["9.6",0],["9.8",0],["10.1",0],["10.3",-28],["10.6",0],["10.8",-28],["11.1",0],["11.3",0],["11.6",0],["11.8",0],["12.1",0],["12.3",0],["12.6",0],["12.8",0],["13.1",0],["13.3",0],["13.6",0],["13.8",0],["14.1",-29],["14.3",0],["14.6",0],["14.8",0],["15.1",0],["15.3",0],["15.6",0],["15.8",0],["16.3",0],["16.6",0],["16.8",0],["17.1",0],["17.3",0],["17.6",0],["17.8",0],["18.1",0],["18.4",-48],["18.6",0],["18.8",0],["19.1",0],["19.4",-4],["19.6",-49],["19.9",-50],["20.1",-50],["20.4",0],["20.6",0],["20.9",0],["21.1",0],["21.4",40],["21.6",42],["21.9",50],["22.1",0],["22.4",0],["22.6",0],["22.9",49],["23.1",0],["23.4",0],["23.6",0],["23.9",0],["24.1",0],["24.4",0],["24.6",0],["24.9",0],["25.1",0],["25.4",0],["25.6",0],["25.9",0],["26.1",0]]"
 
                       // update lines
@@ -194,7 +211,10 @@
 
                       // update ratings line given the positioned_ratings array. do the scale conversions within ____
 
-                      // todo
+                      timeline.append("path")
+                          .datum(ratings)
+                          .attr("class", "line")
+                          .attr("d", ratingsLineGenerator);
 
                   })
 
