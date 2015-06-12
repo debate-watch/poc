@@ -34,8 +34,9 @@
    + [slider tooltips & tick-marks customization](http://simeydotme.github.io/jQuery-ui-Slider-Pips/#customisation-styling)
  + [circular slider](https://github.com/princejwesley/circular-slider)
 
-## Site Feedback and Insights
+## Data Collection and Visualization
  + [d3 line chart](http://bl.ocks.org/mbostock/3883245)
- + [d3 line generation functions](https://github.com/mbostock/d3/wiki/SVG-Shapes#path-data-generators)
+ + [d3 line generation function](https://github.com/mbostock/d3/wiki/SVG-Shapes#path-data-generators)
  + [creating d3 line graphs](http://www.sitepoint.com/creating-simple-line-bar-charts-using-d3-js/)
  + [d3 array map](https://github.com/mbostock/d3/wiki/Arrays#d3_map)
+ + [d3 transition](https://github.com/mbostock/d3/wiki/Transitions#d3_transition)
