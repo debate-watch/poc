@@ -64,11 +64,18 @@
   <script src="bower_components/jquery.ui/ui/slider.js"></script>
   <script type="text/javascript">
 
-      // player
+      // VIDEO
+
+      var video = {file_name: "/videos/IowaRepublicanLincolnDinner_400771_3.mp4", image_name: "/images/IowaRepublicanLincolnDinner_400771.png"}
+
+      // PLAYER
 
       var player
 
-      var player_options = {height: 360, width: 640, starting_position: 0, file_name: "/videos/IowaRepublicanLincolnDinner_400771_3.mp4", image_name: "/images/IowaRepublicanLincolnDinner_400771.png"}
+      var player_options = {height: 360, width: 640, starting_position: 0}
+
+      var xScale = d3.scale.linear()
+          .range([0, player_options.width]);
 
       d3.json("api_keys.json", function(json){
 
@@ -77,7 +84,7 @@
           $.getScript(jwplayer_source_url, function(data, textStatus, jqxhr){
 
               player = jwplayer('player')
-                  .setup({file: player_options.file_name, image: player_options.image_name, height: player_options.height, width: player_options.width })
+                  .setup({file: video.file_name, image: video.image_name, height: player_options.height, width: player_options.width })
                   .onTime(function(e){
                       getRating()
                   });
@@ -100,7 +107,7 @@
           player.stop()
       };
 
-      // ratings slider
+      // RATINGS SLIDER
 
       var rating_options = {min: -50, neutral: 0, max: 50, step: 1}
 
@@ -110,18 +117,49 @@
           .slider({orientation:"vertical", min: rating_options.min, max: rating_options.max, step: rating_options.step, value: rating_options.neutral })
           .on("slidechange", function(e,ui){
               if(e.originalEvent){
-                  getRating() // ya?
-
-                  ratings_slider.slider("option","value", rating_options.neutral);
-
+                  getVideoDuration()
+                  var rating = getRating()
+                  movePositionMarker(rating.position)
+                  returnToNeutral()
               }
           })
+
+      function getVideoDuration(){
+          video.duration = player.getDuration() // only works within onTime or after player starts playing...
+          xScale.domain([0, video.duration])
+      };
+
+      function returnToNeutral(){
+        ratings_slider.slider("option","value", rating_options.neutral)
+        //todo: slower transition?
+      }
 
       function getRating(){
           var rating = {position: player.getPosition(), rating_value: ratings_slider.slider("value")}
           ratings.set(rating.position, rating.rating_value)
           console.log(ratings.size(), rating)
+          return rating
       }; // to test this method, click the slider a few times in quick succession to create duplicate records, then check to make sure the size of the array isn't increasing.
+
+      function movePositionMarker(position){
+          position_marker.transition()
+              .attr("x1", xScale(position))
+              .attr("x2", xScale(position))
+      };
+
+      // RESULTS
+
+      var svg = d3.select("div#timeline").append("svg")
+          .attr("height", 36)
+          .attr("width", player_options.width)
+          .attr("style", "border:1px solid #ccc; background:#eee;")
+
+      var position_marker = svg.append("svg:line")
+          .attr("y1", 0).attr("y2", 100)
+          .attr("x1", 0).attr("x2", 0)
+          .attr("fill","none")
+          .attr("stroke","steelblue")
+          .attr("stroke-width","2px")
 
   </script>
 </body>
