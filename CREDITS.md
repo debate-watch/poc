@@ -40,3 +40,4 @@
  + [creating d3 line graphs](http://www.sitepoint.com/creating-simple-line-bar-charts-using-d3-js/)
  + [d3 array map](https://github.com/mbostock/d3/wiki/Arrays#d3_map)
  + [d3 transition](https://github.com/mbostock/d3/wiki/Transitions#d3_transition)
+ + [svg paths and d3](https://www.dashingd3js.com/svg-paths-and-d3js)

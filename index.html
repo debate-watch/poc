@@ -74,16 +74,23 @@
 
       var player_options = {height: 360, width: 640, starting_position: 0}
 
+      // SVG
+
+      var svg_options = {height:36, width: 640}
+
       var xScale = d3.scale.linear()
-          .range([0, player_options.width * 100]);
+          .range([0, svg_options.width])
+
+      var yScale = d3.scale.linear()
+          .range([svg_options.height, 0])
 
       var svg = d3.select("div#timeline").append("svg")
-          .attr("height", 36)
-          .attr("width", player_options.width)
+          .attr("height", svg_options.height)
+          .attr("width", svg_options.width)
           .attr("style", "border:1px solid #ccc; background:#eee;")
 
       var position_marker = svg.append("svg:line")
-          .attr("y1", 0).attr("y2", 100)
+          .attr("y1", 0).attr("y2", svg_options.height)
           .attr("x1", 0).attr("x2", 0)
           .attr("fill","none")
           .attr("stroke","steelblue")
@@ -101,6 +108,7 @@
                       getVideoDuration()
                       var rating = getRating()
                       movePositionMarker(rating.position)
+                      plotRating()
                   });
 
               play()
@@ -132,9 +140,15 @@
               .attr("x2", xScale(position))
       };
 
+      // VIEWER
+
+      // todo
+
       // RATINGS SLIDER
 
       var rating_options = {min: -50, neutral: 0, max: 50, step: 1}
+
+      yScale.domain([rating_options.min, rating_options.max])
 
       var ratings = d3.map()
 
@@ -149,7 +163,6 @@
 
       function returnToNeutral(){
         ratings_slider.slider("option","value", rating_options.neutral)
-        //todo: slower transition?
       }
 
       function getRating(){
@@ -160,6 +173,24 @@
       }; // to test this method, click the slider a few times in quick succession to create duplicate records, then check to make sure the size of the array isn't increasing.
 
       // RESULTS
+
+      var resultsLineFunc = d3.svg.line()
+          .x(function(d) { return xScale(d[0]) })
+          .y(function(d) { return yScale(d[1]) })
+          .interpolate('linear');
+
+      //var results_offset = svg.append("svg:g")
+      //    .attr("transform", "translate(" + 0 + "," + svg_options.height / 2 + ")") // baseline at vertical middle
+
+      var results_marker = svg.append('svg:path') // results_offset.append('svg:path')
+          .attr("fill","none")
+          .attr("stroke","steelblue")
+          .attr("stroke-width","2px")
+
+      function plotRating(){
+          var coordinates = ratings.entries().map(function(r){ return [parseFloat(r.key), parseInt(r.value)] })
+          results_marker.attr('d', resultsLineFunc(coordinates))
+      }
 
   </script>
 </body>
