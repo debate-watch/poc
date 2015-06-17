@@ -156,7 +156,9 @@
           .slider({orientation:"vertical", min: rating_options.min, max: rating_options.max, step: rating_options.step, value: rating_options.neutral })
           .on("slidechange", function(e,ui){
               if(e.originalEvent){
-                  getRating()
+                  getVideoDuration()
+                  var rating = getRating()
+                  movePositionMarker(rating.position)
                   returnToNeutral()
               }
           })
