@@ -89,6 +89,66 @@
           .attr("width", svg_options.width)
           .attr("style", "border:1px solid #ccc; background:#eee;")
 
+      var linearClosed_svg = d3.select("div#timeline").append("svg")
+          .attr("height", svg_options.height)
+          .attr("width", svg_options.width)
+          .attr("style", "border:1px solid #ccc; background:#eee;")
+
+      var step_svg = d3.select("div#timeline").append("svg")
+          .attr("height", svg_options.height)
+          .attr("width", svg_options.width)
+          .attr("style", "border:1px solid #ccc; background:#eee;")
+
+      var stepBefore_svg = d3.select("div#timeline").append("svg")
+          .attr("height", svg_options.height)
+          .attr("width", svg_options.width)
+          .attr("style", "border:1px solid #ccc; background:#eee;")
+
+      var stepAfter_svg = d3.select("div#timeline").append("svg")
+          .attr("height", svg_options.height)
+          .attr("width", svg_options.width)
+          .attr("style", "border:1px solid #ccc; background:#eee;")
+
+      var basis_svg = d3.select("div#timeline").append("svg")
+          .attr("height", svg_options.height)
+          .attr("width", svg_options.width)
+          .attr("style", "border:1px solid #ccc; background:#eee;")
+
+      var basisOpen_svg = d3.select("div#timeline").append("svg")
+          .attr("height", svg_options.height)
+          .attr("width", svg_options.width)
+          .attr("style", "border:1px solid #ccc; background:#eee;")
+
+      var basisClosed_svg = d3.select("div#timeline").append("svg")
+          .attr("height", svg_options.height)
+          .attr("width", svg_options.width)
+          .attr("style", "border:1px solid #ccc; background:#eee;")
+
+      var bundle_svg = d3.select("div#timeline").append("svg")
+          .attr("height", svg_options.height)
+          .attr("width", svg_options.width)
+          .attr("style", "border:1px solid #ccc; background:#eee;")
+
+      var cardinal_svg = d3.select("div#timeline").append("svg")
+          .attr("height", svg_options.height)
+          .attr("width", svg_options.width)
+          .attr("style", "border:1px solid #ccc; background:#eee;")
+
+      var cardinalOpen_svg = d3.select("div#timeline").append("svg")
+          .attr("height", svg_options.height)
+          .attr("width", svg_options.width)
+          .attr("style", "border:1px solid #ccc; background:#eee;")
+
+      var cardinalClosed_svg = d3.select("div#timeline").append("svg")
+          .attr("height", svg_options.height)
+          .attr("width", svg_options.width)
+          .attr("style", "border:1px solid #ccc; background:#eee;")
+
+      var monotone_svg = d3.select("div#timeline").append("svg")
+          .attr("height", svg_options.height)
+          .attr("width", svg_options.width)
+          .attr("style", "border:1px solid #ccc; background:#eee;")
+
       var position_marker = svg.append("svg:line")
           .attr("y1", 0).attr("y2", svg_options.height)
           .attr("x1", 0).attr("x2", 0)
@@ -176,10 +236,70 @@
 
       // RESULTS
 
-      var resultsLineFunc = d3.svg.line()
+      var linear = d3.svg.line()
           .x(function(d) { return xScale(d[0]) })
           .y(function(d) { return yScale(d[1]) })
           .interpolate('linear');
+
+      var linearClosed = d3.svg.line()
+          .x(function(d) { return xScale(d[0]) })
+          .y(function(d) { return yScale(d[1]) })
+          .interpolate('linear-closed');
+
+      var step = d3.svg.line()
+          .x(function(d) { return xScale(d[0]) })
+          .y(function(d) { return yScale(d[1]) })
+          .interpolate('step');
+
+      var stepBefore = d3.svg.line()
+          .x(function(d) { return xScale(d[0]) })
+          .y(function(d) { return yScale(d[1]) })
+          .interpolate('step-before');
+
+      var stepAfter = d3.svg.line()
+          .x(function(d) { return xScale(d[0]) })
+          .y(function(d) { return yScale(d[1]) })
+          .interpolate('step-after');
+
+      var basis = d3.svg.line()
+          .x(function(d) { return xScale(d[0]) })
+          .y(function(d) { return yScale(d[1]) })
+          .interpolate('basis');
+
+      var basisOpen = d3.svg.line()
+          .x(function(d) { return xScale(d[0]) })
+          .y(function(d) { return yScale(d[1]) })
+          .interpolate('basis-open');
+
+      var basisClosed = d3.svg.line()
+          .x(function(d) { return xScale(d[0]) })
+          .y(function(d) { return yScale(d[1]) })
+          .interpolate('basis-closed');
+
+      var bundle = d3.svg.line()
+          .x(function(d) { return xScale(d[0]) })
+          .y(function(d) { return yScale(d[1]) })
+          .interpolate('bundle');
+
+      var cardinal = d3.svg.line()
+          .x(function(d) { return xScale(d[0]) })
+          .y(function(d) { return yScale(d[1]) })
+          .interpolate('cardinal');
+
+      var cardinalOpen = d3.svg.line()
+          .x(function(d) { return xScale(d[0]) })
+          .y(function(d) { return yScale(d[1]) })
+          .interpolate('cardinal-open');
+
+      var cardinalClosed = d3.svg.line()
+          .x(function(d) { return xScale(d[0]) })
+          .y(function(d) { return yScale(d[1]) })
+          .interpolate('cardinal-closed');
+
+      var monotone = d3.svg.line()
+          .x(function(d) { return xScale(d[0]) })
+          .y(function(d) { return yScale(d[1]) })
+          .interpolate('monotone');
 
       //var results_offset = svg.append("svg:g")
       //    .attr("transform", "translate(" + 0 + "," + svg_options.height / 2 + ")") // baseline at vertical middle
@@ -189,9 +309,81 @@
           .attr("stroke","steelblue")
           .attr("stroke-width","2px")
 
+      var linearClosed_marker = linearClosed_svg.append('svg:path')
+          .attr("fill","none")
+          .attr("stroke","steelblue")
+          .attr("stroke-width","2px")
+
+      var step_marker = step_svg.append('svg:path')
+          .attr("fill","none")
+          .attr("stroke","steelblue")
+          .attr("stroke-width","2px")
+
+      var stepBefore_marker = stepBefore_svg.append('svg:path')
+          .attr("fill","none")
+          .attr("stroke","steelblue")
+          .attr("stroke-width","2px")
+
+      var stepAfter_marker = stepAfter_svg.append('svg:path')
+          .attr("fill","none")
+          .attr("stroke","steelblue")
+          .attr("stroke-width","2px")
+
+      var basis_marker = basis_svg.append('svg:path')
+          .attr("fill","none")
+          .attr("stroke","steelblue")
+          .attr("stroke-width","2px")
+
+      var basisOpen_marker = basisOpen_svg.append('svg:path')
+          .attr("fill","none")
+          .attr("stroke","steelblue")
+          .attr("stroke-width","2px")
+
+      var basisClosed_marker = basisClosed_svg.append('svg:path')
+          .attr("fill","none")
+          .attr("stroke","steelblue")
+          .attr("stroke-width","2px")
+
+      var bundle_marker = bundle_svg.append('svg:path')
+          .attr("fill","none")
+          .attr("stroke","steelblue")
+          .attr("stroke-width","2px")
+
+      var cardinal_marker = cardinal_svg.append('svg:path')
+          .attr("fill","none")
+          .attr("stroke","steelblue")
+          .attr("stroke-width","2px")
+
+      var cardinalOpen_marker = cardinalOpen_svg.append('svg:path')
+          .attr("fill","none")
+          .attr("stroke","steelblue")
+          .attr("stroke-width","2px")
+
+      var cardinalClosed_marker = cardinalClosed_svg.append('svg:path')
+          .attr("fill","none")
+          .attr("stroke","steelblue")
+          .attr("stroke-width","2px")
+
+      var monotone_marker = monotone_svg.append('svg:path')
+          .attr("fill","none")
+          .attr("stroke","steelblue")
+          .attr("stroke-width","2px")
+
       function plotRating(){
           var coordinates = ratings.entries().map(function(r){ return [parseFloat(r.key), parseInt(r.value)] })
-          results_marker.attr('d', resultsLineFunc(coordinates))
+          results_marker.attr('d', linear(coordinates))
+          linearClosed_marker.attr('d', linearClosed(coordinates))
+          step_marker.attr('d', step(coordinates))
+          stepBefore_marker.attr('d', stepBefore(coordinates))
+          stepAfter_marker.attr('d', stepAfter(coordinates))
+          basis_marker.attr('d', basis(coordinates))
+          basisOpen_marker.attr('d', basisOpen(coordinates))
+          basisClosed_marker.attr('d', basisClosed(coordinates))
+          bundle_marker.attr('d', bundle(coordinates))
+          cardinal_marker.attr('d', cardinal(coordinates))
+          cardinalOpen_marker.attr('d', cardinalOpen(coordinates))
+          cardinalClosed_marker.attr('d', cardinalClosed(coordinates))
+          monotone_marker.attr('d', monotone(coordinates))
       }
 
   </script>
