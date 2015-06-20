@@ -1,0 +1,199 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+  <title>Debate Watch</title>
+  <link rel="stylesheet" href="bower_components/octicons/octicons/octicons.css">
+  <link rel="stylesheet" href="bower_components/jquery.ui/themes/base/core.css">
+  <link rel="stylesheet" href="bower_components/jquery.ui/themes/base/slider.css">
+  <link rel="stylesheet" href="bower_components/jquery.ui/themes/base/theme.css">
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css">
+  <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  <![endif]-->
+  <style type="text/css">
+      body { padding-top: 60px; }
+      nav {height: 60px; }
+      /* .navigation .octicon { width: 64px;} */
+      div#page {width: 940px; }
+      div#player {display:inline-block; }
+      div#slider {display:inline-block; height: 360px; margin-left:1em; }
+      div#timeline {margin-top:1em; margin-bottom:1em; }
+      footer {margin-top: 1em; margin-bottom: 2em; }
+      .line {fill: none; stroke: steelblue; stroke-width: 1.5px; }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <a class="navbar-brand" href="#"><span class="mega-octicon octicon-podium"></span></a>
+    </div>
+  </nav>
+
+  <div id="page" class="container">
+    <div class="page-header">
+      <h1 id="event-title">Iowa Republican Lincoln Dinner <small id="event-date">May 10, 2015</small></h1>
+    </div>
+
+    <div id="player-container">
+      <div class="row">
+        <div id="player">Loading the player ...</div>
+        <div id="slider"></div>
+      </div>
+      <div class="row">
+        <div id="timeline"></div>
+      </div>
+    </div>
+  </div>
+
+  <footer class="container">
+    <hr>
+    <a href="https://github.com/debate-watch/poc">source</a>
+  </footer>
+
+  <script src="bower_components/d3/d3.min.js" charset="utf-8"></script>
+  <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="bower_components/jquery.ui/ui/core.js"></script>
+  <script src="bower_components/jquery.ui/ui/widget.js"></script>
+  <script src="bower_components/jquery.ui/ui/mouse.js"></script>
+  <script src="bower_components/jquery.ui/ui/slider.js"></script>
+  <script type="text/javascript">
+
+      // VIDEO
+
+      var video = {file_name: "/videos/IowaRepublicanLincolnDinner_400771_3.mp4", image_name: "/images/IowaRepublicanLincolnDinner_400771.png"}
+
+      // PLAYER
+
+      var player
+
+      var player_options = {height: 360, width: 640, starting_position: 0}
+
+      // SVG
+
+      var svg_options = {height:36, width: 640}
+
+      var xScale = d3.scale.linear()
+          .range([0, svg_options.width])
+
+      var yScale = d3.scale.linear()
+          .range([svg_options.height, 0])
+
+      var svg = d3.select("div#timeline").append("svg")
+          .attr("height", svg_options.height)
+          .attr("width", svg_options.width)
+          .attr("style", "border:1px solid #ccc; background:#eee;")
+
+      var position_marker = svg.append("svg:line")
+          .attr("y1", 0).attr("y2", svg_options.height)
+          .attr("x1", 0).attr("x2", 0)
+          .attr("fill","none")
+          .attr("stroke","steelblue")
+          .attr("stroke-width","2px")
+
+      d3.json("api_keys.json", function(json){
+
+          var jwplayer_source_url = "http://jwpsrv.com/library/" + json["jwplayer"] + ".js"
+
+          $.getScript(jwplayer_source_url, function(data, textStatus, jqxhr){
+
+              player = jwplayer('player')
+                  .setup({file: video.file_name, image: video.image_name, height: player_options.height, width: player_options.width })
+                  .onTime(function(e){
+                      getVideoDuration()
+                      var rating = getRating()
+                      movePositionMarker(rating.position)
+                      plotRating()
+                  });
+
+              play()
+
+          });
+
+      });
+
+      function play(){
+          player.play(true)
+      };
+
+      function pause(){
+          player.play(false)
+      };
+
+      function stop(){
+          player.stop()
+      };
+
+      function getVideoDuration(){
+          video.duration = player.getDuration() // only works within onTime or after player starts playing...
+          xScale.domain([0, video.duration])
+      };
+
+      function movePositionMarker(position){
+          position_marker.transition()
+              .attr("x1", xScale(position))
+              .attr("x2", xScale(position))
+      };
+
+      // VIEWER
+
+      // todo
+
+      // RATINGS SLIDER
+
+      var rating_options = {min: -50, neutral: 0, max: 50, step: 1}
+
+      yScale.domain([rating_options.min, rating_options.max])
+
+      var ratings = d3.map()
+
+      var ratings_slider = $("#slider")
+          .slider({orientation:"vertical", min: rating_options.min, max: rating_options.max, step: rating_options.step, value: rating_options.neutral })
+          .on("slidechange", function(e,ui){
+              if(e.originalEvent){
+                  getVideoDuration()
+                  var rating = getRating()
+                  movePositionMarker(rating.position)
+                  returnToNeutral()
+              }
+          })
+
+      function returnToNeutral(){
+        ratings_slider.slider("option","value", rating_options.neutral)
+      }
+
+      function getRating(){
+          var rating = {position: player.getPosition(), rating_value: ratings_slider.slider("value")}
+          ratings.set(rating.position, rating.rating_value)
+          console.log(ratings.size(), rating)
+          return rating
+      }; // to test this method, click the slider a few times in quick succession to create duplicate records, then check to make sure the size of the array isn't increasing.
+
+      // RESULTS
+
+      var resultsLineFunc = d3.svg.line()
+          .x(function(d) { return xScale(d[0]) })
+          .y(function(d) { return yScale(d[1]) })
+          .interpolate('linear');
+
+      //var results_offset = svg.append("svg:g")
+      //    .attr("transform", "translate(" + 0 + "," + svg_options.height / 2 + ")") // baseline at vertical middle
+
+      var results_marker = svg.append('svg:path') // results_offset.append('svg:path')
+          .attr("fill","none")
+          .attr("stroke","steelblue")
+          .attr("stroke-width","2px")
+
+      function plotRating(){
+          var coordinates = ratings.entries().map(function(r){ return [parseFloat(r.key), parseInt(r.value)] })
+          results_marker.attr('d', resultsLineFunc(coordinates))
+      }
+
+  </script>
+</body>
+</html>
